@@ -1,0 +1,15 @@
+# Everything the build makes (make clean removes it)
+build/
+__pycache__/
+
+# Private notes (not part of the project)
+CLAUDE.md
+docs/history.md
+
+# Editors
+.idea/
+.junie/
+*.iml
+
+# Backups
+*.zip

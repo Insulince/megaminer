@@ -1,0 +1,9 @@
+# Text files are stored with LF and checked out with LF on every system, so
+# Windows and Linux/macOS working copies are byte-identical (shell commands,
+# Python and the generated files do not care, and every editor copes).
+* text=auto eol=lf
+
+# Not text, whatever git guesses.
+*.png binary
+*.jpg binary
+*.zip binary

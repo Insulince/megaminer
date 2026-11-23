@@ -1,0 +1,24 @@
+micro-ecc by Kenneth MacKay, BSD 2-clause (see LICENSE.txt).
+Source: https://github.com/kmackay/micro-ecc
+Commit:  541b3a78026420a3e369c4c9281c396b5e531113 (2024-11-13)
+Copied on 2026-11-14. Compiled only through sv2curve.c, which sets its options.
+
+ONE LOCAL CHANGE (2026-11-15), asm_avr.inc only: "memory" added to the clobber
+list of all 14 inline-assembly statements. Without it GCC 16 assumes the
+assembly never reads or writes the arrays it is handed pointers to, warns that
+they "may be used uninitialized", and miscompiles the callers: the first curve
+operation crashed and reset the ATmega. Every other file is unmodified.
+
+SECOND LOCAL CHANGE (2026-11-15), asm_avr.inc only: uECC_vli_add and
+uECC_vli_sub (the optimization-level-2 versions) store through register Z, but
+the instruction that loads Z with the result pointer sits in a jump table that
+is only compiled when more than one curve size is enabled. With secp256k1 alone
+Z was never loaded, so every add/subtract wrote 32 bytes to a stray address
+(seen in the disassembly; it crashed the ATmega in the first field operation).
+Fix: "movw r30, %A[result]" added in the single-size case of both functions.
+
+THIRD LOCAL CHANGE (2026-11-16), uECC.c only: three lines at the top of the
+main loop of EccPoint_mult call the macro uECC_YIELD() if the including file
+defines it. sv2curve.c uses it so the miner can answer its serial console
+during the multi-second multiplications. Without the macro the library is
+unchanged.
